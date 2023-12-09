@@ -3,19 +3,22 @@ package com.nemo.veloon.presentation.theme
 import androidx.compose.ui.graphics.Color
 import androidx.wear.compose.material.Colors
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
-val Red400 = Color(0xFFCF6679)
+val md_theme_dark_primary = Color(0xFF69DD96)
+val md_theme_dark_onPrimary = Color(0xFF00391D)
+val md_theme_dark_primaryContainer = Color(0xFF00522D)
+val md_theme_dark_secondary = Color(0xFFB6CCB9)
+val md_theme_dark_onSecondary = Color(0xFF223527)
+val md_theme_dark_secondaryContainer = Color(0xFF384B3D)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_onError = Color(0xFF690005)
 
-internal val wearColorPalette: Colors = Colors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200,
-    secondaryVariant = Teal200,
-    error = Red400,
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
-    onError = Color.Black
+val wearColorPalette: Colors = Colors(
+    primary = md_theme_dark_primary,
+    primaryVariant = md_theme_dark_primaryContainer,
+    secondary = md_theme_dark_secondary,
+    secondaryVariant = md_theme_dark_secondaryContainer,
+    error = md_theme_dark_error,
+    onPrimary = md_theme_dark_onPrimary,
+    onSecondary = md_theme_dark_onSecondary,
+    onError = md_theme_dark_onError,
 )
