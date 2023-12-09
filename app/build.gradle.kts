@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.health.services)
     implementation(libs.google.guava)
+    implementation(libs.datastore.preferences)
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
     androidTestImplementation(platform(libs.compose.bom))
