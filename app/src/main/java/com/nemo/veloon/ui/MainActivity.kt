@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     mainActivityViewModel = viewModel,
                     startForegroundService = {
                         val service = Intent(this, ActivityService::class.java)
-                        startService(service)
+                        startForegroundService(service)
                     },
                     stopForegroundService = {
                         val service = Intent(this, ActivityService::class.java)

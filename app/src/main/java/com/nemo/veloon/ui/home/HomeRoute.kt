@@ -49,11 +49,9 @@ fun HomeRoute(
             modifier = Modifier.fillMaxSize(),
             state = state,
             onStartButtonClicked = {
-                mainActivityViewModel.onStartButtonClicked()
                 startForegroundService()
             },
             onFinishButtonClicked = {
-                mainActivityViewModel.onFinishButtonClicked()
                 stopForegroundService()
             },
         )
@@ -87,6 +85,7 @@ private fun HomePanel(
                 text = {
                     InProgressText(
                         pace = state.pace.toString(),
+                        distance = state.distance.toString(),
                     )
                 }
             )
@@ -108,6 +107,7 @@ private fun InPreparationText(modifier: Modifier = Modifier) {
 private fun InProgressText(
     modifier: Modifier = Modifier,
     pace: String,
+    distance: String,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -160,7 +160,7 @@ private fun InProgressText(
             ) {
                 HugeText(
                     modifier = Modifier.weight(1f),
-                    text = "50.0",
+                    text = distance,
                     textAlign = TextAlign.Start,
                     color = MaterialTheme.colors.primary,
                     maxLines = 1,
@@ -219,6 +219,7 @@ private class PreviewProvider : PreviewParameterProvider<ActivityMeasurementStat
             ActivityMeasurementState.InPreparation,
             ActivityMeasurementState.InProgress(
                 pace = 0.0,
+                distance = 0.0,
             ),
         )
 }

@@ -9,13 +9,18 @@ import javax.inject.Inject
 class BikingActivityRepository @Inject constructor(
     private val bikingActivityDataStore: BikingActivityDataStore
 ) {
-    val activeBikingPaceFlow: Flow<Activity.Pace> = bikingActivityDataStore.bikingPaceFlow.map { Activity.Pace(it) }
+    val isBikingFlow: Flow<Boolean> = bikingActivityDataStore.isBikingFlow
 
-    suspend fun setActiveBikingPace(bikingPace: Activity.Pace) =
+    suspend fun setIsBiking(isBiking: Boolean) =
+        bikingActivityDataStore.setIsBiking(isBiking)
+
+    val bikingPaceFlow: Flow<Activity.Pace> = bikingActivityDataStore.bikingPaceFlow.map { Activity.Pace(it) }
+
+    suspend fun setBikingPace(bikingPace: Activity.Pace) =
         bikingActivityDataStore.setBikingPace(bikingPace.value)
 
-    val activeBikingDistanceFlow: Flow<Activity.Distance> = bikingActivityDataStore.bikingDistanceFlow.map { Activity.Distance(it) }
+    val bikingDistanceFlow: Flow<Activity.Distance> = bikingActivityDataStore.bikingDistanceFlow.map { Activity.Distance(it) }
 
-    suspend fun setActiveBikingDistance(bikingDistance: Activity.Distance) =
+    suspend fun setBikingDistance(bikingDistance: Activity.Distance) =
         bikingActivityDataStore.setBikingDistance(bikingDistance.value)
 }

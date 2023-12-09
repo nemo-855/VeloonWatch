@@ -5,5 +5,6 @@ sealed class ActivityMeasurementState {
 
     class InProgress(
         val pace: Double,
+        val distance: Double,
     ) : ActivityMeasurementState()
 }
