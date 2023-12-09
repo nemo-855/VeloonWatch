@@ -1,4 +1,4 @@
-package com.nemo.veloon.presentation.theme
+package com.nemo.veloon.ui.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight

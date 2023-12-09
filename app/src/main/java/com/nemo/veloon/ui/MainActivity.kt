@@ -4,7 +4,7 @@
  * changes to the libraries and their usages.
  */
 
-package com.nemo.veloon.presentation
+package com.nemo.veloon.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.nemo.veloon.R
-import com.nemo.veloon.presentation.theme.VeloonTheme
+import com.nemo.veloon.ui.theme.VeloonTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

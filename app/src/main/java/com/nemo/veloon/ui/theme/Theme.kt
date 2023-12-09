@@ -1,4 +1,4 @@
-package com.nemo.veloon.presentation.theme
+package com.nemo.veloon.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme
