@@ -6,23 +6,35 @@
 
 package com.nemo.veloon.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import com.nemo.veloon.data.foregroundservice.ActivityService
 import com.nemo.veloon.ui.home.HomeRoute
 import com.nemo.veloon.ui.theme.VeloonTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             VeloonTheme {
-                HomeRoute(viewModel = viewModel)
+                HomeRoute(
+                    mainActivityViewModel = viewModel,
+                    startForegroundService = {
+                        val service = Intent(this, ActivityService::class.java)
+                        startService(service)
+                    },
+                    stopForegroundService = {
+                        val service = Intent(this, ActivityService::class.java)
+                        stopService(service)
+                    }
+                )
             }
         }
     }

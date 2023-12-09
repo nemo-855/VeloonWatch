@@ -6,11 +6,11 @@ import com.nemo.veloon.data.sensor.ActivitySensorImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object DataModule {
     @Provides
     fun provideActivitySensor(@ApplicationContext context: Context): ActivitySensor {

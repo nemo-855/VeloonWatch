@@ -32,25 +32,29 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import com.nemo.veloon.R
-import com.nemo.veloon.ui.HomeViewModel
+import com.nemo.veloon.ui.MainActivityViewModel
 import com.nemo.veloon.ui.components.atoms.HugeText
 import com.nemo.veloon.ui.theme.VeloonTheme
 
 @Composable
 fun HomeRoute(
-    viewModel: HomeViewModel
+    mainActivityViewModel: MainActivityViewModel,
+    startForegroundService: () -> Unit,
+    stopForegroundService: () -> Unit,
 ) {
-    val state = viewModel.state.collectAsState().value
+    val state = mainActivityViewModel.state.collectAsState().value
 
     Scaffold {
         HomePanel(
             modifier = Modifier.fillMaxSize(),
             state = state,
             onStartButtonClicked = {
-                viewModel.onStartButtonClicked()
+                mainActivityViewModel.onStartButtonClicked()
+                startForegroundService()
             },
             onFinishButtonClicked = {
-                viewModel.onFinishButtonClicked()
+                mainActivityViewModel.onFinishButtonClicked()
+                stopForegroundService()
             },
         )
     }
@@ -59,12 +63,12 @@ fun HomeRoute(
 @Composable
 private fun HomePanel(
     modifier: Modifier = Modifier,
-    state: HomeState,
+    state: ActivityMeasurementState,
     onStartButtonClicked: () -> Unit,
     onFinishButtonClicked: () -> Unit,
 ) {
     when (state) {
-        is HomeState.InPreparation -> {
+        is ActivityMeasurementState.InPreparation -> {
             Content(
                 modifier = modifier,
                 buttonPainter = painterResource(id = R.drawable.play_outlined),
@@ -75,7 +79,7 @@ private fun HomePanel(
             )
         }
 
-        is HomeState.InProgress -> {
+        is ActivityMeasurementState.InProgress -> {
             Content(
                 modifier = modifier,
                 buttonPainter = painterResource(id = R.drawable.stop_outlined),
@@ -209,11 +213,11 @@ private fun Content(
     }
 }
 
-private class PreviewProvider : PreviewParameterProvider<HomeState> {
-    override val values: Sequence<HomeState>
+private class PreviewProvider : PreviewParameterProvider<ActivityMeasurementState> {
+    override val values: Sequence<ActivityMeasurementState>
         get() = sequenceOf(
-            HomeState.InPreparation,
-            HomeState.InProgress(
+            ActivityMeasurementState.InPreparation,
+            ActivityMeasurementState.InProgress(
                 pace = 0.0,
             ),
         )
@@ -225,7 +229,7 @@ private class PreviewProvider : PreviewParameterProvider<HomeState> {
 )
 @Composable
 private fun HomePanelPreview(
-    @PreviewParameter(PreviewProvider::class) homeState: HomeState,
+    @PreviewParameter(PreviewProvider::class) homeState: ActivityMeasurementState,
 ) {
     VeloonTheme {
         Box(

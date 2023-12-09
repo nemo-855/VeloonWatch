@@ -4,25 +4,35 @@ package com.nemo.veloon.domain
  * 計測情報
  *
  * @param activity 走行情報
- * @param isLoading 計測情報の取得中かどうか
- * @param isAvailable 計測情報の取得が可能かどうか
+ * @param measurementStatus 情報の計測状態
  */
 data class ActivityState(
     val activity: Activity,
-    val isLoading: Boolean,
-    val isAvailable: Boolean,
+    val measurementStatus: MeasurementStatus,
 ) {
     companion object {
         val INITIAL = ActivityState(
             activity = Activity.EMPTY,
-            isLoading = false,
-            isAvailable = false,
+            measurementStatus = MeasurementStatus.LOCATION_ACQUIRING,
         )
     }
 
     fun copyActivity(
-        pace: Activity.Pace,
+        pace: Activity.Pace? = null,
+        distance: Activity.Distance? = null,
     ): ActivityState {
-        return copy(activity = activity.copy(pace = pace))
+        return copy(
+            activity = activity.copy(
+                pace = pace ?: activity.pace,
+                distance = distance ?: activity.distance,
+            )
+        )
+    }
+
+    enum class MeasurementStatus {
+        LOCATION_ACQUIRED,
+        LOCATION_ACQUIRING,
+        LOCATION_PERMISSTION_DENIED,
+        LOCATION_ERROR,
     }
 }

@@ -7,9 +7,13 @@ package com.nemo.veloon.domain
  */
 data class Activity(
     val pace: Pace,
+    val distance: Distance,
 ) {
     companion object {
-        val EMPTY = Activity(Pace(Double.NaN))
+        val EMPTY = Activity(
+            pace = Pace(Double.NaN),
+            distance = Distance(Double.NaN),
+        )
     }
 
     /**
@@ -17,4 +21,10 @@ data class Activity(
      */
     @JvmInline
     value class Pace(val value: Double)
+
+    /**
+     * 走行距離(km)
+     */
+    @JvmInline
+    value class Distance(val value: Double)
 }

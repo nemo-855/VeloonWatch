@@ -21,4 +21,9 @@ interface ActivitySensor {
      * 現在の計測情報
      */
     val current: StateFlow<ActivityState>
+
+    sealed class ActivitySensorException : Exception() {
+        object AnotherExerciseIsInProgress : ActivitySensorException()
+        object BikingMeasurementIsNotSupported : ActivitySensorException()
+    }
 }
