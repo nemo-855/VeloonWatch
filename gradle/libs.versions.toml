@@ -11,6 +11,7 @@ compose-material = "1.0.0"
 compose-foundation = "1.0.0"
 lifecycle-runtime-ktx = "2.5.1"
 activity-compose = "1.5.1"
+health-services = "1.1.0-alpha01"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -28,6 +29,7 @@ compose-material = { group = "androidx.wear.compose", name = "compose-material",
 compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "compose-foundation" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+health-services = { group = "androidx.health", name = "health-services-client", version.ref = "health-services" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
