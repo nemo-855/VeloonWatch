@@ -1,7 +1,7 @@
 package com.nemo.veloon.data.sensor
 
 import com.nemo.veloon.domain.ActivityState
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * 計測情報を提供するためのインターフェース
@@ -20,5 +20,5 @@ interface ActivitySensor {
     /**
      * 現在の計測情報
      */
-    val current: SharedFlow<ActivityState>
+    val current: StateFlow<ActivityState>
 }
