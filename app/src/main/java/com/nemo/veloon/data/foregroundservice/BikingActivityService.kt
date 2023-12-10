@@ -23,6 +23,7 @@ class BikingActivityService : Service() {
     companion object {
         private const val CHANNEL_ID = "BikingActivityServiceChannel"
         private const val CHANNEL_NAME = "BikingActivityService Channel"
+        private const val FOREGROUND_SERVICE_ID = 81219
     }
 
     private lateinit var bikingActivityRepository: BikingActivityRepository
@@ -89,7 +90,7 @@ class BikingActivityService : Service() {
             .build()
 
         //5．フォアグラウンド開始。
-        startForeground(2222, notification)
+        startForeground(FOREGROUND_SERVICE_ID, notification)
 
         return START_STICKY
     }
