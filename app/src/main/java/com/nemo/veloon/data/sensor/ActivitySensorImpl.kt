@@ -14,13 +14,11 @@ import androidx.health.services.client.data.ExerciseUpdate
 import androidx.health.services.client.data.LocationAvailability
 import com.nemo.veloon.domain.Activity
 import com.nemo.veloon.domain.ActivityState
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
-class ActivitySensorImpl @Inject constructor(@ApplicationContext context: Context) :
+class ActivitySensorImpl(context: Context) :
     ActivitySensor {
     private val exerciseClient = HealthServices.getClient(context).exerciseClient
 

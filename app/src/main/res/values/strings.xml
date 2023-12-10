@@ -8,4 +8,6 @@
     <string name="home_panel_pace_unit">km/h</string>
     <string name="home_panel_distance">distance</string>
     <string name="home_panel_distance_unit">km</string>
+    <string name="home_panel_notification_text">Have a nice Biking!</string>
+    <string name="home_panel_notification_stop_text">Stop App</string>
 </resources>
