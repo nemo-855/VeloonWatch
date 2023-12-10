@@ -17,9 +17,17 @@ import javax.inject.Singleton
 class BikingActivityDataStore @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-        name = BIKING_ACTIVITY_DATASTORE_NAME
-    )
+    companion object {
+        private const val BIKING_ACTIVITY_DATASTORE_NAME = "biking_activity_datastore"
+
+        private val IS_BIKING_KEY = booleanPreferencesKey("is_biking")
+        private val BIKING_PACE_KEY = doublePreferencesKey("biking_pace")
+        private val BIKING_DISTANCE_KEY = doublePreferencesKey("biking_distance")
+
+        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+            name = BIKING_ACTIVITY_DATASTORE_NAME
+        )
+    }
 
     val isBikingFlow: Flow<Boolean> = context.dataStore.data.map {
         it[IS_BIKING_KEY] ?: false
@@ -49,13 +57,5 @@ class BikingActivityDataStore @Inject constructor(
         context.dataStore.edit {
             it[BIKING_DISTANCE_KEY] = bikingDistance
         }
-    }
-
-    companion object {
-        private const val BIKING_ACTIVITY_DATASTORE_NAME = "biking_activity_datastore"
-
-        private val IS_BIKING_KEY = booleanPreferencesKey("is_biking")
-        private val BIKING_PACE_KEY = doublePreferencesKey("biking_pace")
-        private val BIKING_DISTANCE_KEY = doublePreferencesKey("biking_distance")
     }
 }

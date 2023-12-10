@@ -11,7 +11,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.nemo.veloon.data.foregroundservice.ActivityService
+import com.nemo.veloon.data.foregroundservice.BikingActivityService
 import com.nemo.veloon.ui.home.HomeRoute
 import com.nemo.veloon.ui.theme.VeloonTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,11 +27,11 @@ class MainActivity : ComponentActivity() {
                 HomeRoute(
                     mainActivityViewModel = viewModel,
                     startForegroundService = {
-                        val service = Intent(this, ActivityService::class.java)
+                        val service = Intent(this, BikingActivityService::class.java)
                         startForegroundService(service)
                     },
                     stopForegroundService = {
-                        val service = Intent(this, ActivityService::class.java)
+                        val service = Intent(this, BikingActivityService::class.java)
                         stopService(service)
                     }
                 )
