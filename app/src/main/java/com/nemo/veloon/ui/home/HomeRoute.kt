@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.ScalingLazyListScope
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
@@ -71,8 +72,8 @@ private fun HomePanel(
                 modifier = modifier,
                 buttonPainter = painterResource(id = R.drawable.play_outlined),
                 onClick = onStartButtonClicked,
-                text = {
-                    InPreparationText()
+                textContent = {
+                    inPreparationText()
                 }
             )
         }
@@ -82,9 +83,9 @@ private fun HomePanel(
                 modifier = modifier,
                 buttonPainter = painterResource(id = R.drawable.stop_outlined),
                 onClick = onFinishButtonClicked,
-                text = {
-                    InProgressText(
-                        pace = state.pace.toString(),
+                textContent = {
+                    inProgressText(
+                        speed = state.speed.toString(),
                         distance = state.distance.toString(),
                     )
                 }
@@ -93,32 +94,27 @@ private fun HomePanel(
     }
 }
 
-@Composable
-private fun InPreparationText(modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier,
-        text = stringResource(id = R.string.home_panel_click_start),
-        color = MaterialTheme.colors.primary,
-        style = MaterialTheme.typography.body1,
-    )
+private fun ScalingLazyListScope.inPreparationText() {
+    item {
+        Text(
+            text = stringResource(id = R.string.home_panel_click_start),
+            color = MaterialTheme.colors.primary,
+            style = MaterialTheme.typography.body1,
+        )
+    }
 }
 
-@Composable
-private fun InProgressText(
-    modifier: Modifier = Modifier,
-    pace: String,
+private fun ScalingLazyListScope.inProgressText(
+    speed: String,
     distance: String,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceBetween,
-    ) {
+    item {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start,
         ) {
             Text(
-                text = stringResource(id = R.string.home_panel_pace),
+                text = stringResource(id = R.string.home_panel_speed),
                 color = MaterialTheme.colors.primary,
                 style = MaterialTheme.typography.body1,
             )
@@ -128,23 +124,27 @@ private fun InProgressText(
             ) {
                 HugeText(
                     modifier = Modifier.weight(1f),
-                    text = pace,
+                    text = speed,
                     textAlign = TextAlign.Start,
                     color = MaterialTheme.colors.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = stringResource(id = R.string.home_panel_pace_unit),
+                    text = stringResource(id = R.string.home_panel_speed_unit),
                     color = MaterialTheme.colors.primary,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.body1,
                 )
             }
         }
+    }
 
+    item {
         Spacer(modifier = Modifier.size(16.dp))
+    }
 
+    item {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start,
@@ -182,29 +182,30 @@ private fun Content(
     modifier: Modifier = Modifier,
     buttonPainter: Painter,
     onClick: () -> Unit,
-    text: @Composable BoxScope.() -> Unit,
+    textContent: ScalingLazyListScope.() -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
+        ScalingLazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .padding(
                     top = 24.dp,
-                    start = 48.dp,
-                    end = 48.dp,
+                    start = 24.dp,
+                    end = 24.dp,
                 ),
-            contentAlignment = Alignment.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            text()
+            textContent()
         }
         Icon(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(4.dp)
                 .clickable(onClick = onClick)
-                .padding(8.dp)
+                .padding(4.dp)
                 .size(36.dp),
             painter = buttonPainter,
             tint = MaterialTheme.colors.secondary,
@@ -218,8 +219,12 @@ private class PreviewProvider : PreviewParameterProvider<ActivityMeasurementStat
         get() = sequenceOf(
             ActivityMeasurementState.InPreparation,
             ActivityMeasurementState.InProgress(
-                pace = 0.0,
+                speed = 0.0,
                 distance = 0.0,
+            ),
+            ActivityMeasurementState.InProgress(
+                speed = 50.0,
+                distance = 1000.0,
             ),
         )
 }

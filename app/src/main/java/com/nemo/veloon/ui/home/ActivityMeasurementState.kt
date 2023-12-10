@@ -4,7 +4,7 @@ sealed class ActivityMeasurementState {
     object InPreparation : ActivityMeasurementState()
 
     class InProgress(
-        val pace: Double,
+        val speed: Double,
         val distance: Double,
     ) : ActivityMeasurementState()
 }

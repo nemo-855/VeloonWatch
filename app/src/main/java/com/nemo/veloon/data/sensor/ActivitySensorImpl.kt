@@ -58,7 +58,7 @@ class ActivitySensorImpl(context: Context) :
     private suspend fun isAllNecessaryDataTypesAvailable(exerciseClient: ExerciseClient): Boolean {
         val capabilities = exerciseClient.getCapabilitiesAsync().awaitWithException().getExerciseTypeCapabilities(ExerciseType.BIKING)
         val necessaryDataTypes = setOf(
-            DataType.PACE,
+            DataType.SPEED,
             DataType.DISTANCE,
         )
         return necessaryDataTypes.all { it in capabilities.supportedDataTypes }
@@ -75,8 +75,8 @@ class ActivitySensorImpl(context: Context) :
                 // ExerciseUpdate doc ↓
                 // https://developer.android.com/reference/androidx/health/services/client/data/ExerciseUpdate
                 val latestMetrics = update.latestMetrics
-                latestMetrics.getData(DataType.PACE).forEach { pace ->
-                    _current.update { it.copyActivity(pace = Activity.Pace(pace.value)) }
+                latestMetrics.getData(DataType.SPEED).forEach { speed ->
+                    _current.update { it.copyActivity(speed = Activity.Speed(speed.value)) }
                 }
                 latestMetrics.getData(DataType.DISTANCE).forEach { distance ->
                     _current.update { it.copyActivity(distance = Activity.Distance(distance.value)) }

@@ -4,8 +4,8 @@
     <!--HomePanel-->
     <string name="home_panel_click_start">Let\'s\nStart!!</string>
     <string name="home_panel_start_button">計測開始ボタン</string>
-    <string name="home_panel_pace">pace</string>
-    <string name="home_panel_pace_unit">km/h</string>
+    <string name="home_panel_speed">speed</string>
+    <string name="home_panel_speed_unit">km/h</string>
     <string name="home_panel_distance">distance</string>
     <string name="home_panel_distance_unit">km</string>
     <string name="home_panel_notification_text">Have a nice Biking!</string>

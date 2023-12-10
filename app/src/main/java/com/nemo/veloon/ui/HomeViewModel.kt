@@ -23,7 +23,7 @@ class HomeViewModel @Inject constructor(
             ActivityMeasurementState.InPreparation
         } else {
             ActivityMeasurementState.InProgress(
-                pace = activityState.activity.pace.value,
+                speed = activityState.activity.speed.value,
                 distance =  activityState.activity.distance.value,
             )
         }

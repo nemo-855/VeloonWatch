@@ -12,7 +12,7 @@ data class SerializableActivityState(
     companion object {
         fun from(activityState: ActivityState) = SerializableActivityState(
             activity = SerializableActivity(
-                pace = activityState.activity.pace.value,
+                speed = activityState.activity.speed.value,
                 distance = activityState.activity.distance.value,
             ),
             measurementStatus = activityState.measurementStatus,
@@ -22,7 +22,7 @@ data class SerializableActivityState(
             return this?.let {
                 ActivityState(
                     activity = Activity(
-                        pace = Activity.Pace(it.activity.pace),
+                        speed = Activity.Speed(it.activity.speed),
                         distance = Activity.Distance(it.activity.distance),
                     ),
                     measurementStatus = measurementStatus,
@@ -33,7 +33,7 @@ data class SerializableActivityState(
 
     @Serializable
     data class SerializableActivity(
-        val pace: Double,
+        val speed: Double,
         val distance: Double,
     )
 }
