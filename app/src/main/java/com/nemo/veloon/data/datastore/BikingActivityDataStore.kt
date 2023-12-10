@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.nemo.veloon.domain.ActivityState
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,8 +24,7 @@ class BikingActivityDataStore @Inject constructor(
         private const val BIKING_ACTIVITY_DATASTORE_NAME = "biking_activity_datastore"
 
         private val IS_BIKING_KEY = booleanPreferencesKey("is_biking")
-        private val BIKING_PACE_KEY = doublePreferencesKey("biking_pace")
-        private val BIKING_DISTANCE_KEY = doublePreferencesKey("biking_distance")
+        private val BIKING_ACTIVITY_STATE_KEY = stringPreferencesKey("biking_activity_state")
 
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
             name = BIKING_ACTIVITY_DATASTORE_NAME
@@ -39,23 +41,22 @@ class BikingActivityDataStore @Inject constructor(
         }
     }
 
-    val bikingPaceFlow: Flow<Double> = context.dataStore.data.map {
-        it[BIKING_PACE_KEY] ?: 0.0
-    }
-
-    suspend fun setBikingPace(bikingPace: Double) {
-        context.dataStore.edit {
-            it[BIKING_PACE_KEY] = bikingPace
+    val bikingActivityStateFlow: Flow<SerializableActivityState?> = context.dataStore.data.map { it ->
+        it[BIKING_ACTIVITY_STATE_KEY]?.let { savedString ->
+            Json.decodeFromString<SerializableActivityState>(savedString)
         }
     }
 
-    val bikingDistanceFlow: Flow<Double> = context.dataStore.data.map {
-        it[BIKING_DISTANCE_KEY] ?: 0.0
+    suspend fun setActivityState(activityState: ActivityState) {
+        val serializableActivityState = SerializableActivityState.from(activityState)
+        context.dataStore.edit {
+            it[BIKING_ACTIVITY_STATE_KEY] = Json.encodeToString(serializableActivityState)
+        }
     }
 
-    suspend fun setBikingDistance(bikingDistance: Double) {
+    suspend fun deleteActivityState() {
         context.dataStore.edit {
-            it[BIKING_DISTANCE_KEY] = bikingDistance
+            it.remove(BIKING_ACTIVITY_STATE_KEY)
         }
     }
 }

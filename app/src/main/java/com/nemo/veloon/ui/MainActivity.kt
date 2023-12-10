@@ -18,14 +18,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainActivityViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             VeloonTheme {
                 HomeRoute(
-                    mainActivityViewModel = viewModel,
+                    viewModel = homeViewModel,
                     startForegroundService = {
                         val service = Intent(this, BikingActivityService::class.java)
                         startForegroundService(service)

@@ -12,20 +12,19 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     bikingActivityRepository: BikingActivityRepository
 ) : ViewModel() {
     val state: StateFlow<ActivityMeasurementState> = combine(
         bikingActivityRepository.isBikingFlow,
-        bikingActivityRepository.bikingPaceFlow,
-        bikingActivityRepository.bikingDistanceFlow,
-    ) { isBiking, pace, distance ->
+        bikingActivityRepository.bikingActivityStateFlow,
+    ) { isBiking, activityState ->
         if (!isBiking) {
             ActivityMeasurementState.InPreparation
         } else {
             ActivityMeasurementState.InProgress(
-                pace = pace.value,
-                distance = distance.value,
+                pace = activityState.activity.pace.value,
+                distance =  activityState.activity.distance.value,
             )
         }
     }.stateIn(

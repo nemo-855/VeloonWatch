@@ -18,6 +18,7 @@ import com.nemo.veloon.data.sensor.ActivitySensorImpl
 import com.nemo.veloon.ui.MainActivity
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class BikingActivityService : Service() {
@@ -29,6 +30,8 @@ class BikingActivityService : Service() {
 
     private lateinit var bikingActivityRepository: BikingActivityRepository
     private lateinit var activitySensor: ActivitySensor
+
+    private var collectCurrentActivityStateJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -42,47 +45,14 @@ class BikingActivityService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-            if (throwable !is ActivitySensor.ActivitySensorException) {
-                return@CoroutineExceptionHandler
-            }
-
-            when (throwable) {
-                ActivitySensor.ActivitySensorException.AnotherExerciseIsInProgress -> {
-                    // TODO Implement
-                }
-
-                ActivitySensor.ActivitySensorException.BikingMeasurementIsNotSupported -> {
-                    // TODO Implement
-                }
-            }
-
-            stopService(Intent(this, BikingActivityService::class.java))
-        }
-
-        CoroutineScope(coroutineExceptionHandler).launch {
-            bikingActivityRepository.setIsBiking(true)
-            activitySensor.start()
-            activitySensor.current.collect {
-                bikingActivityRepository.setBikingPace(it.activity.pace)
-                bikingActivityRepository.setBikingDistance(it.activity.distance)
-            }
-        }
-
         startForeground(FOREGROUND_SERVICE_ID, createNotification(applicationContext))
-
+        onStartService()
         return START_STICKY
     }
 
     override fun stopService(name: Intent?): Boolean {
-        val exceptionHandler = CoroutineExceptionHandler { _, _ ->
-            // no-op
-        }
-        CoroutineScope(exceptionHandler).launch {
-            bikingActivityRepository.setIsBiking(false)
-            activitySensor.stop()
-        }
         stopSelf()
+        onStopService()
         return super.stopService(name)
     }
 
@@ -113,5 +83,49 @@ class BikingActivityService : Service() {
             .setContentIntent(openIntent)
             .addAction(R.drawable.stop_outlined, context.getString(R.string.home_panel_notification_stop_text), sendPendingIntent)
             .build()
+    }
+
+    private fun onStartService() {
+        val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            if (throwable !is ActivitySensor.ActivitySensorException) {
+                return@CoroutineExceptionHandler
+            }
+
+            when (throwable) {
+                ActivitySensor.ActivitySensorException.AnotherExerciseIsInProgress -> {
+                    // TODO Implement
+                }
+
+                ActivitySensor.ActivitySensorException.BikingMeasurementIsNotSupported -> {
+                    // TODO Implement
+                }
+            }
+
+            stopService(Intent(this, BikingActivityService::class.java))
+        }
+
+        collectCurrentActivityStateJob = CoroutineScope(coroutineExceptionHandler).launch {
+            activitySensor.current.collect {
+                bikingActivityRepository.setActivityState(it)
+            }
+        }
+
+        CoroutineScope(coroutineExceptionHandler).launch {
+            bikingActivityRepository.startBiking()
+            activitySensor.start()
+            collectCurrentActivityStateJob?.join()
+        }
+    }
+
+    private fun onStopService() {
+        val exceptionHandler = CoroutineExceptionHandler { _, _ ->
+            // no-op
+        }
+        CoroutineScope(exceptionHandler).launch {
+            bikingActivityRepository.finishBiking()
+            activitySensor.stop()
+            collectCurrentActivityStateJob?.cancel()
+            collectCurrentActivityStateJob = null
+        }
     }
 }

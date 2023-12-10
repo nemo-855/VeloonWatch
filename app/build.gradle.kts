@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlin.serialization)
     alias(libs.plugins.com.google.dagger.hilt.android.gradle)
     id("kotlin-kapt")
 }
@@ -68,6 +69,7 @@ dependencies {
     implementation(libs.health.services)
     implementation(libs.google.guava)
     implementation(libs.datastore.preferences)
+    implementation(libs.kotlin.serialization)
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
     androidTestImplementation(platform(libs.compose.bom))

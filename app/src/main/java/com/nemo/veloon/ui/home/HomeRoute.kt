@@ -32,17 +32,17 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import com.nemo.veloon.R
-import com.nemo.veloon.ui.MainActivityViewModel
+import com.nemo.veloon.ui.HomeViewModel
 import com.nemo.veloon.ui.components.atoms.HugeText
 import com.nemo.veloon.ui.theme.VeloonTheme
 
 @Composable
 fun HomeRoute(
-    mainActivityViewModel: MainActivityViewModel,
+    viewModel: HomeViewModel,
     startForegroundService: () -> Unit,
     stopForegroundService: () -> Unit,
 ) {
-    val state = mainActivityViewModel.state.collectAsState().value
+    val state = viewModel.state.collectAsState().value
 
     Scaffold {
         HomePanel(
