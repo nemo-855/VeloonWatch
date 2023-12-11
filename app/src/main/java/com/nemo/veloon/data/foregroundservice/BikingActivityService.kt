@@ -50,10 +50,9 @@ class BikingActivityService : Service() {
         return START_STICKY
     }
 
-    override fun stopService(name: Intent?): Boolean {
-        stopSelf()
-        onStopService()
-        return super.stopService(name)
+    override fun onDestroy() {
+        super.onDestroy()
+        onDestroyService()
     }
 
     private fun createNotification(context: Context): Notification {
@@ -117,7 +116,7 @@ class BikingActivityService : Service() {
         }
     }
 
-    private fun onStopService() {
+    private fun onDestroyService() {
         val exceptionHandler = CoroutineExceptionHandler { _, _ ->
             // no-op
         }
