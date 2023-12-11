@@ -7,6 +7,7 @@ import androidx.health.services.client.HealthServices
 import androidx.health.services.client.awaitWithException
 import androidx.health.services.client.data.Availability
 import androidx.health.services.client.data.DataType
+import androidx.health.services.client.data.ExerciseConfig
 import androidx.health.services.client.data.ExerciseLapSummary
 import androidx.health.services.client.data.ExerciseTrackedStatus.Companion.NO_EXERCISE_IN_PROGRESS
 import androidx.health.services.client.data.ExerciseType
@@ -16,7 +17,6 @@ import com.nemo.veloon.domain.Activity
 import com.nemo.veloon.domain.ActivityState
 import com.nemo.veloon.domain.InAppException
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class ActivitySensorImpl(context: Context) :
@@ -24,7 +24,12 @@ class ActivitySensorImpl(context: Context) :
     private val exerciseClient = HealthServices.getClient(context).exerciseClient
 
     private val _current = MutableStateFlow(ActivityState.INITIAL)
-    override val current = _current.asStateFlow()
+    override val current = _current
+
+    private val necessaryDataTypes = setOf(
+        DataType.SPEED,
+        DataType.DISTANCE,
+    )
 
     override suspend fun start() {
         // デバイス全体において既存のExerciseがあるかどうかを確認する
@@ -56,12 +61,11 @@ class ActivitySensorImpl(context: Context) :
         return ExerciseType.BIKING in capabilities.supportedExerciseTypes
     }
 
-    private suspend fun isAllNecessaryDataTypesAvailable(exerciseClient: ExerciseClient): Boolean {
+    private suspend fun isAllNecessaryDataTypesAvailable(
+        exerciseClient: ExerciseClient,
+        necessaryDataTypes: Set<DataType<*, *>>
+    ): Boolean {
         val capabilities = exerciseClient.getCapabilitiesAsync().awaitWithException().getExerciseTypeCapabilities(ExerciseType.BIKING)
-        val necessaryDataTypes = setOf(
-            DataType.SPEED,
-            DataType.DISTANCE,
-        )
         return necessaryDataTypes.all { it in capabilities.supportedDataTypes }
     }
 
@@ -135,5 +139,18 @@ class ActivitySensorImpl(context: Context) :
             }
         }
         this.setUpdateCallback(callback)
+    }
+
+    private suspend fun ExerciseClient.startExercise(
+        dataTypes: Set<DataType<*, *>>,
+    ) {
+        val config = ExerciseConfig(
+            exerciseType = ExerciseType.BIKING,
+            dataTypes = dataTypes,
+            isAutoPauseAndResumeEnabled = false,
+            isGpsEnabled = true,
+            exerciseGoals = emptyList(),
+        )
+        this.startExerciseAsync(config).awaitWithException()
     }
 }

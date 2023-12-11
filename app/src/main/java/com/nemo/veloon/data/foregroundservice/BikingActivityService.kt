@@ -113,7 +113,7 @@ class BikingActivityService : Service() {
 
         handlingExceptionCoroutineScope.launch {
             bikingActivityRepository.startBiking()
-            collectIsBikingJob?.join()
+            collectIsBikingJob?.start()
         }
     }
 

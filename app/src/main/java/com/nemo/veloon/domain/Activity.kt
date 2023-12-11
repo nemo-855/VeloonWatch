@@ -11,8 +11,8 @@ data class Activity(
 ) {
     companion object {
         val EMPTY = Activity(
-            speed = Speed(Double.NaN),
-            distance = Distance(Double.NaN),
+            speed = Speed(0.0),
+            distance = Distance(0.0),
         )
     }
 
