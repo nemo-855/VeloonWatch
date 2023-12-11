@@ -1,7 +1,7 @@
 package com.nemo.veloon.data.sensor
 
 import com.nemo.veloon.domain.ActivityState
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 /**
  * 計測情報を提供するためのインターフェース
@@ -20,10 +20,5 @@ interface ActivitySensor {
     /**
      * 現在の計測情報
      */
-    val current: StateFlow<ActivityState>
-
-    sealed class ActivitySensorException : Exception() {
-        object AnotherExerciseIsInProgress : ActivitySensorException()
-        object BikingMeasurementIsNotSupported : ActivitySensorException()
-    }
+    val current: Flow<ActivityState>
 }

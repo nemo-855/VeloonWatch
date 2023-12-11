@@ -32,7 +32,8 @@ class MainActivity : ComponentActivity() {
                     },
                     stopForegroundService = {
                         val service = Intent(this, BikingActivityService::class.java)
-                        stopService(service)
+                        service.action = BikingActivityService.REQUEST_TO_STOP_SERVICE
+                        startForegroundService(service)
                     }
                 )
             }

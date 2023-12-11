@@ -14,6 +14,7 @@ import androidx.health.services.client.data.ExerciseUpdate
 import androidx.health.services.client.data.LocationAvailability
 import com.nemo.veloon.domain.Activity
 import com.nemo.veloon.domain.ActivityState
+import com.nemo.veloon.domain.InAppException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,17 +29,17 @@ class ActivitySensorImpl(context: Context) :
     override suspend fun start() {
         // デバイス全体において既存のExerciseがあるかどうかを確認する
         if (!existsNoOtherExerciseInProgress(exerciseClient)) {
-            throw ActivitySensor.ActivitySensorException.AnotherExerciseIsInProgress
+            throw InAppException.ActivityMeasurementException.AnotherExerciseIsInProgress
         }
 
         // 自転車の計測がサポートされているかどうかを確認する
         if (!isBikingSupported(exerciseClient)) {
-            throw ActivitySensor.ActivitySensorException.BikingMeasurementIsNotSupported
+            throw InAppException.ActivityMeasurementException.BikingMeasurementIsNotSupported
         }
 
         // 必要なデータ型がサポートされているかどうかを確認する
         if (!isAllNecessaryDataTypesAvailable(exerciseClient)) {
-            throw ActivitySensor.ActivitySensorException.BikingMeasurementIsNotSupported
+            throw InAppException.ActivityMeasurementException.BikingMeasurementIsNotSupported
         }
 
         _current.update { it.copy(activity = Activity.EMPTY) }
@@ -46,7 +47,7 @@ class ActivitySensorImpl(context: Context) :
     }
 
     override suspend fun stop() {
-        // no-op
+        exerciseClient.endExerciseAsync().awaitWithException()
     }
 
 
@@ -72,14 +73,18 @@ class ActivitySensorImpl(context: Context) :
     private fun ExerciseClient.setExerciseUpdateCallback() {
         val callback = object : ExerciseUpdateCallback {
             override fun onExerciseUpdateReceived(update: ExerciseUpdate) {
-                // ExerciseUpdate doc ↓
-                // https://developer.android.com/reference/androidx/health/services/client/data/ExerciseUpdate
-                val latestMetrics = update.latestMetrics
-                latestMetrics.getData(DataType.SPEED).forEach { speed ->
-                    _current.update { it.copyActivity(speed = Activity.Speed(speed.value)) }
-                }
-                latestMetrics.getData(DataType.DISTANCE).forEach { distance ->
-                    _current.update { it.copyActivity(distance = Activity.Distance(distance.value)) }
+                if (update.exerciseStateInfo.state.isEnded) {
+                    _current.update { it.copy(measurementStatus = ActivityState.MeasurementStatus.FINISHED) }
+                } else {
+                    // ExerciseUpdate doc ↓
+                    // https://developer.android.com/reference/androidx/health/services/client/data/ExerciseUpdate
+                    val latestMetrics = update.latestMetrics
+                    latestMetrics.getData(DataType.SPEED).forEach { speed ->
+                        _current.update { it.copyActivity(speed = Activity.Speed(speed.value)) }
+                    }
+                    latestMetrics.getData(DataType.DISTANCE).forEach { distance ->
+                        _current.update { it.copyActivity(distance = Activity.Distance(distance.value)) }
+                    }
                 }
             }
 
@@ -93,7 +98,7 @@ class ActivitySensorImpl(context: Context) :
 
             override fun onRegistrationFailed(throwable: Throwable) {
                 _current.update {
-                    it.copy(measurementStatus = ActivityState.MeasurementStatus.LOCATION_ERROR)
+                    it.copy(measurementStatus = ActivityState.MeasurementStatus.ERROR)
                 }
             }
 
@@ -105,25 +110,25 @@ class ActivitySensorImpl(context: Context) :
                     LocationAvailability.UNKNOWN,
                     LocationAvailability.UNAVAILABLE -> {
                         _current.update {
-                            it.copy(measurementStatus = ActivityState.MeasurementStatus.LOCATION_ERROR)
+                            it.copy(measurementStatus = ActivityState.MeasurementStatus.ERROR)
                         }
                     }
 
                     LocationAvailability.NO_GNSS -> {
                         _current.update {
-                            it.copy(measurementStatus = ActivityState.MeasurementStatus.LOCATION_PERMISSTION_DENIED)
+                            it.copy(measurementStatus = ActivityState.MeasurementStatus.PERMISSION_DENIED)
                         }
                     }
 
                     LocationAvailability.ACQUIRING -> {
                         _current.update {
-                            it.copy(measurementStatus = ActivityState.MeasurementStatus.LOCATION_ACQUIRING)
+                            it.copy(measurementStatus = ActivityState.MeasurementStatus.LOADING)
                         }
                     }
                     LocationAvailability.ACQUIRED_TETHERED,
                     LocationAvailability.ACQUIRED_UNTETHERED -> {
                         _current.update {
-                            it.copy(measurementStatus = ActivityState.MeasurementStatus.LOCATION_ACQUIRED)
+                            it.copy(measurementStatus = ActivityState.MeasurementStatus.SUCCESS)
                         }
                     }
                 }

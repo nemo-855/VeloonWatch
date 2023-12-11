@@ -13,7 +13,7 @@ data class ActivityState(
     companion object {
         val INITIAL = ActivityState(
             activity = Activity.EMPTY,
-            measurementStatus = MeasurementStatus.LOCATION_ACQUIRING,
+            measurementStatus = MeasurementStatus.LOADING,
         )
     }
 
@@ -30,9 +30,10 @@ data class ActivityState(
     }
 
     enum class MeasurementStatus {
-        LOCATION_ACQUIRED,
-        LOCATION_ACQUIRING,
-        LOCATION_PERMISSTION_DENIED,
-        LOCATION_ERROR,
+        LOADING,
+        PERMISSION_DENIED,
+        ERROR,
+        SUCCESS,
+        FINISHED,
     }
 }
