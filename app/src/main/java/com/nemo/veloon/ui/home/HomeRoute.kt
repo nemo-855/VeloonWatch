@@ -2,6 +2,7 @@ package com.nemo.veloon.ui.home
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -52,7 +54,9 @@ fun HomeRoute(
     startForegroundService: () -> Unit,
     stopForegroundService: () -> Unit,
     checkLocationPermission: () -> String?,
+    isLocationProviderEnabled: () -> Boolean,
 ) {
+    val context = LocalContext.current
     val state = viewModel.state.collectAsState().value
 
     val locationPermissionRequest =
@@ -60,8 +64,7 @@ fun HomeRoute(
             when {
                 permissions.getOrDefault(ACCESS_FINE_LOCATION, false) -> startForegroundService()
                 permissions.getOrDefault(ACCESS_COARSE_LOCATION, false) -> startForegroundService()
-                else -> { /* no-op */
-                }
+                else -> { /* no-op */ }
             }
         }
 
@@ -72,7 +75,9 @@ fun HomeRoute(
             state = state,
             onStartButtonClicked = {
                 // TODO ACCESS_FINE_LOCATIONでないと正しく取れないよということを伝える
-                if (checkLocationPermission() in relatedPermissions) {
+                if (isLocationProviderEnabled().not()) {
+                    Toast.makeText(context, R.string.home_panel_location_provider_disabled, Toast.LENGTH_SHORT).show()
+                } else if (checkLocationPermission() in relatedPermissions) {
                     startForegroundService()
                 } else {
                     locationPermissionRequest.launch(relatedPermissions)

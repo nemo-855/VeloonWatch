@@ -40,21 +40,6 @@ class BikingActivityRepository @Inject constructor(
 
         bikingActivityDataStore.setIsBiking(true)
         activitySensor.start()
-        bikingActivityDataStore.setIsBiking(true)
-
-        collectActivitySensorCurrentStateJob = CoroutineScope(
-            CoroutineExceptionHandler { _, throwable ->
-                throw throwable // ハンドリングは上のレイヤーに任せる
-            }
-        ).launch {
-            activitySensor.current.collect {
-                bikingActivityDataStore.setActivityState(it)
-                if (it.measurementStatus == ActivityState.MeasurementStatus.FINISHED) {
-                    resetActivityState()
-                }
-            }
-        }
-        collectActivitySensorCurrentStateJob?.join()
     }
 
     suspend fun finishBiking() {

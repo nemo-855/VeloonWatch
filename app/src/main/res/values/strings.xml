@@ -10,4 +10,5 @@
     <string name="home_panel_distance_unit">km</string>
     <string name="home_panel_notification_text">Have a nice Biking!</string>
     <string name="home_panel_notification_stop_text">Stop App</string>
+    <string name="home_panel_location_provider_disabled">Please Turn On GPS!</string>
 </resources>
