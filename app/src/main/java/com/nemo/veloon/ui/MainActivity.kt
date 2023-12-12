@@ -51,6 +51,9 @@ class MainActivity : ComponentActivity() {
                             permissionChecker.checkCurrentBodySensorsPermission() != BODY_SENSORS
                         }
                     },
+                    checkCurrentActivityRecognitionPermission = {
+                        permissionChecker.checkCurrentActivityRecognitionPermission() != null
+                    },
                     isLocationProviderEnabled = { locationUtils.isLocationProviderEnabled() },
                 )
             }

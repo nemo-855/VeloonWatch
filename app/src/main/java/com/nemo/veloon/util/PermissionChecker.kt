@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -22,6 +21,11 @@ class PermissionChecker @Inject constructor(@ApplicationContext private val cont
         } else if (checkCurrentPermission(Manifest.permission.BODY_SENSORS)) {
             Manifest.permission.BODY_SENSORS
         } else null
+    }
+
+    fun checkCurrentActivityRecognitionPermission(): String? {
+        return if (checkCurrentPermission(Manifest.permission.ACTIVITY_RECOGNITION)) Manifest.permission.ACTIVITY_RECOGNITION
+        else null
     }
 
     private fun checkCurrentPermission(permission: String): Boolean {

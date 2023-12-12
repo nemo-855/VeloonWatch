@@ -1,5 +1,6 @@
 package com.nemo.veloon.ui.home
 
+import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.BODY_SENSORS
@@ -46,16 +47,6 @@ import com.nemo.veloon.ui.HomeViewModel
 import com.nemo.veloon.ui.components.atoms.HugeText
 import com.nemo.veloon.ui.theme.VeloonTheme
 
-/**
- * この画面で許諾リクエストをするPermissions
- */
-private val locationPermissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
-private val bodySensorsPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    arrayOf(BODY_SENSORS, BODY_SENSORS_BACKGROUND)
-} else {
-    arrayOf(BODY_SENSORS)
-}
-
 @Composable
 fun HomeRoute(
     viewModel: HomeViewModel,
@@ -63,6 +54,7 @@ fun HomeRoute(
     stopForegroundService: () -> Unit,
     checkLocationPermission: () -> Boolean,
     checkBodySensorsPermission: () -> Boolean,
+    checkCurrentActivityRecognitionPermission: () -> Boolean,
     isLocationProviderEnabled: () -> Boolean,
 ) {
     val context = LocalContext.current
@@ -86,10 +78,10 @@ fun HomeRoute(
                 // TODO ACCESS_FINE_LOCATIONでないと正しく取れないよということを伝える
                 if (isLocationProviderEnabled().not()) {
                     Toast.makeText(context, R.string.home_panel_location_provider_disabled, Toast.LENGTH_SHORT).show()
-                } else if (checkLocationPermission() && checkBodySensorsPermission()) {
+                } else if (checkLocationPermission() && checkBodySensorsPermission() && checkCurrentActivityRecognitionPermission()) {
                     startForegroundService()
                 } else {
-                    locationPermissionRequest.launch(locationPermissions + bodySensorsPermissions)
+                    locationPermissionRequest.launch(getNecessaryPermissions())
                 }
             },
             onFinishButtonClicked = {
@@ -215,6 +207,22 @@ private fun ScalingLazyListScope.inProgressText(
             }
         }
     }
+}
+
+/**
+ * 必要なPermissionsを全て取得する
+ */
+
+private fun getNecessaryPermissions(): Array<String> {
+    val locationPermissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+    val bodySensorsPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(BODY_SENSORS, BODY_SENSORS_BACKGROUND)
+    } else {
+        arrayOf(BODY_SENSORS)
+    }
+    val activityRecognitionPermissions = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
+
+    return locationPermissions + bodySensorsPermissions + activityRecognitionPermissions
 }
 
 @Composable
