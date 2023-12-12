@@ -1,6 +1,9 @@
 package com.nemo.veloon.ui
 
+import android.Manifest.permission.BODY_SENSORS
+import android.Manifest.permission.BODY_SENSORS_BACKGROUND
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,7 +41,16 @@ class MainActivity : ComponentActivity() {
                         service.action = BikingActivityService.REQUEST_TO_STOP_SERVICE
                         startForegroundService(service)
                     },
-                    checkLocationPermission = { permissionChecker.checkLocationPermission() },
+                    checkLocationPermission = {
+                        permissionChecker.checkCurrentLocationPermission() != null
+                    },
+                    checkBodySensorsPermission = {
+                        if (Build.VERSION_CODES.TIRAMISU <= Build.VERSION.SDK_INT) {
+                            permissionChecker.checkCurrentBodySensorsPermission() != BODY_SENSORS_BACKGROUND
+                        } else {
+                            permissionChecker.checkCurrentBodySensorsPermission() != BODY_SENSORS
+                        }
+                    },
                     isLocationProviderEnabled = { locationUtils.isLocationProviderEnabled() },
                 )
             }
