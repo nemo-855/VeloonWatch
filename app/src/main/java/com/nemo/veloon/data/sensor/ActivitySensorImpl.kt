@@ -43,12 +43,13 @@ class ActivitySensorImpl(context: Context) :
         }
 
         // 必要なデータ型がサポートされているかどうかを確認する
-        if (!isAllNecessaryDataTypesAvailable(exerciseClient)) {
+        if (!isAllNecessaryDataTypesAvailable(exerciseClient, necessaryDataTypes)) {
             throw InAppException.ActivityMeasurementException.BikingMeasurementIsNotSupported
         }
 
         _current.update { it.copy(activity = Activity.EMPTY) }
         exerciseClient.setExerciseUpdateCallback()
+        exerciseClient.startExercise(necessaryDataTypes)
     }
 
     override suspend fun stop() {

@@ -1,5 +1,7 @@
 package com.nemo.veloon.ui.home
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,15 +44,29 @@ fun HomeRoute(
     viewModel: HomeViewModel,
     startForegroundService: () -> Unit,
     stopForegroundService: () -> Unit,
+    checkLocationPermission: () -> String?,
+    requestLocationPermission: (onAccessFineLocationGranted: () -> Unit ,
+                                onAccessCoarseLocationGranted: () -> Unit,
+                                onNoPermissionGranted: () -> Unit) -> Unit,
 ) {
     val state = viewModel.state.collectAsState().value
+
 
     Scaffold {
         HomePanel(
             modifier = Modifier.fillMaxSize(),
             state = state,
             onStartButtonClicked = {
-                startForegroundService()
+                // TODO ACCESS_FINE_LOCATIONでないと正しく取れないよということを伝える
+                if (checkLocationPermission() in arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
+                    startForegroundService()
+                } else {
+                    requestLocationPermission(
+                        { startForegroundService() },
+                        { startForegroundService() },
+                        { /* no-op */ },
+                    )
+                }
             },
             onFinishButtonClicked = {
                 stopForegroundService()
