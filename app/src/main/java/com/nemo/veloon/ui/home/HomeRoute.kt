@@ -2,6 +2,8 @@ package com.nemo.veloon.ui.home
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,17 +41,29 @@ import com.nemo.veloon.ui.HomeViewModel
 import com.nemo.veloon.ui.components.atoms.HugeText
 import com.nemo.veloon.ui.theme.VeloonTheme
 
+/**
+ * この画面で許諾リクエストをするPermissions
+ */
+private val relatedPermissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+
 @Composable
 fun HomeRoute(
     viewModel: HomeViewModel,
     startForegroundService: () -> Unit,
     stopForegroundService: () -> Unit,
     checkLocationPermission: () -> String?,
-    requestLocationPermission: (onAccessFineLocationGranted: () -> Unit ,
-                                onAccessCoarseLocationGranted: () -> Unit,
-                                onNoPermissionGranted: () -> Unit) -> Unit,
 ) {
     val state = viewModel.state.collectAsState().value
+
+    val locationPermissionRequest =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            when {
+                permissions.getOrDefault(ACCESS_FINE_LOCATION, false) -> startForegroundService()
+                permissions.getOrDefault(ACCESS_COARSE_LOCATION, false) -> startForegroundService()
+                else -> { /* no-op */
+                }
+            }
+        }
 
 
     Scaffold {
@@ -58,14 +72,10 @@ fun HomeRoute(
             state = state,
             onStartButtonClicked = {
                 // TODO ACCESS_FINE_LOCATIONでないと正しく取れないよということを伝える
-                if (checkLocationPermission() in arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
+                if (checkLocationPermission() in relatedPermissions) {
                     startForegroundService()
                 } else {
-                    requestLocationPermission(
-                        { startForegroundService() },
-                        { startForegroundService() },
-                        { /* no-op */ },
-                    )
+                    locationPermissionRequest.launch(relatedPermissions)
                 }
             },
             onFinishButtonClicked = {
