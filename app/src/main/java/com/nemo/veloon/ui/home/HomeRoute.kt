@@ -2,6 +2,9 @@ package com.nemo.veloon.ui.home
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.BODY_SENSORS
+import android.Manifest.permission.BODY_SENSORS_BACKGROUND
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,14 +49,20 @@ import com.nemo.veloon.ui.theme.VeloonTheme
 /**
  * この画面で許諾リクエストをするPermissions
  */
-private val relatedPermissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+private val locationPermissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+private val bodySensorsPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    arrayOf(BODY_SENSORS, BODY_SENSORS_BACKGROUND)
+} else {
+    arrayOf(BODY_SENSORS)
+}
 
 @Composable
 fun HomeRoute(
     viewModel: HomeViewModel,
     startForegroundService: () -> Unit,
     stopForegroundService: () -> Unit,
-    checkLocationPermission: () -> String?,
+    checkLocationPermission: () -> Boolean,
+    checkBodySensorsPermission: () -> Boolean,
     isLocationProviderEnabled: () -> Boolean,
 ) {
     val context = LocalContext.current
@@ -77,10 +86,10 @@ fun HomeRoute(
                 // TODO ACCESS_FINE_LOCATIONでないと正しく取れないよということを伝える
                 if (isLocationProviderEnabled().not()) {
                     Toast.makeText(context, R.string.home_panel_location_provider_disabled, Toast.LENGTH_SHORT).show()
-                } else if (checkLocationPermission() in relatedPermissions) {
+                } else if (checkLocationPermission() && checkBodySensorsPermission()) {
                     startForegroundService()
                 } else {
-                    locationPermissionRequest.launch(relatedPermissions)
+                    locationPermissionRequest.launch(locationPermissions + bodySensorsPermissions)
                 }
             },
             onFinishButtonClicked = {
