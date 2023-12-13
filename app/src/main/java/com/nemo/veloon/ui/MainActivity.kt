@@ -38,8 +38,7 @@ class MainActivity : ComponentActivity() {
                     },
                     stopForegroundService = {
                         val service = Intent(this, BikingActivityService::class.java)
-                        service.action = BikingActivityService.REQUEST_TO_STOP_SERVICE
-                        startForegroundService(service)
+                        stopService(service)
                     },
                     checkLocationPermission = {
                         permissionChecker.checkCurrentLocationPermission() != null

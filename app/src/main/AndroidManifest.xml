@@ -46,8 +46,8 @@
         <service
             android:name=".data.foregroundservice.BikingActivityService"
             android:exported="false"
-            android:foregroundServiceType="health"
-            android:stopWithTask="true" />
+            android:foregroundServiceType="health|location"
+            android:stopWithTask="false" />
         <receiver
             android:name=".data.broadcastreceiver.BikingActivityServiceBroadcastReceiver"
             android:exported="false">

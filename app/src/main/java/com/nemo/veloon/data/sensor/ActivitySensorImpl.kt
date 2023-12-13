@@ -13,6 +13,7 @@ import androidx.health.services.client.data.ExerciseTrackedStatus.Companion.NO_E
 import androidx.health.services.client.data.ExerciseType
 import androidx.health.services.client.data.ExerciseUpdate
 import androidx.health.services.client.data.LocationAvailability
+import androidx.health.services.client.endExercise
 import com.nemo.veloon.domain.Activity
 import com.nemo.veloon.domain.ActivityState
 import com.nemo.veloon.domain.InAppException
@@ -53,7 +54,7 @@ class ActivitySensorImpl(context: Context) :
     }
 
     override suspend fun stop() {
-        exerciseClient.endExerciseAsync().awaitWithException()
+        exerciseClient.endExercise()
     }
 
 

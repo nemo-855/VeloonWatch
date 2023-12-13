@@ -13,36 +13,34 @@ import com.nemo.veloon.R
 import com.nemo.veloon.data.broadcastreceiver.BikingActivityServiceBroadcastReceiver
 import com.nemo.veloon.data.datastore.BikingActivityDataStore
 import com.nemo.veloon.data.repository.BikingActivityRepository
+import com.nemo.veloon.data.sensor.ActivitySensor
 import com.nemo.veloon.data.sensor.ActivitySensorImpl
 import com.nemo.veloon.ui.MainActivity
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class BikingActivityService : Service() {
     companion object {
-        const val REQUEST_TO_STOP_SERVICE = "RequestToStopService"
         private const val CHANNEL_ID = "BikingActivityServiceChannel"
         private const val CHANNEL_NAME = "BikingActivityService Channel"
         private const val FOREGROUND_SERVICE_ID = 81219
     }
 
     private lateinit var bikingActivityRepository: BikingActivityRepository
+    private lateinit var activitySensor: ActivitySensor
 
-    private var collectIsBikingJob: Job? = null
-
-    private val defaultCoroutineScope = CoroutineScope(CoroutineExceptionHandler { _, _ ->
-        // no-op
-    })
+    private val job = SupervisorJob()
+    private val foregroundServiceScope =
+        CoroutineScope(Dispatchers.Main + job)
 
     override fun onCreate() {
         super.onCreate()
         val context = applicationContext
-        bikingActivityRepository = BikingActivityRepository(
-            bikingActivityDataStore = BikingActivityDataStore(context),
-            activitySensor = ActivitySensorImpl(context),
-        )
+        bikingActivityRepository = BikingActivityRepository(BikingActivityDataStore(context))
+        activitySensor = ActivitySensorImpl(context)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -50,18 +48,21 @@ class BikingActivityService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action.equals(REQUEST_TO_STOP_SERVICE)) {
-            onRequestedToStopService()
-        } else {
-            startForeground(FOREGROUND_SERVICE_ID, createNotification(applicationContext))
-            onStartService()
-        }
+        startForeground(FOREGROUND_SERVICE_ID, createNotification(applicationContext))
+        onStartService()
         return START_STICKY
     }
 
     override fun onDestroy() {
+        runBlocking {
+            try {
+                finishBiking()
+            } catch (e: Exception) {
+                // no-op
+            }
+        }
+        job.cancel()
         super.onDestroy()
-        onDestroyService()
     }
 
     private fun createNotification(context: Context): Notification {
@@ -98,33 +99,21 @@ class BikingActivityService : Service() {
     }
 
     private fun onStartService() {
-        val handlingExceptionCoroutineScope = CoroutineScope(
-            CoroutineExceptionHandler { _, _ ->
-                defaultCoroutineScope.launch { bikingActivityRepository.finishBiking() }
+        foregroundServiceScope.launch {
+            runCatching {
+                bikingActivityRepository.startBiking()
+                activitySensor.start()
+            }.onSuccess {
+                // no-op
+            }.onFailure {
+                finishBiking()
                 stopSelf()
             }
-        )
-
-        collectIsBikingJob = handlingExceptionCoroutineScope.launch {
-            bikingActivityRepository.isBikingFlow.collect { isBiking ->
-                if (!isBiking) stopSelf()
-            }
-        }
-
-        handlingExceptionCoroutineScope.launch {
-            bikingActivityRepository.startBiking()
-            collectIsBikingJob?.start()
         }
     }
 
-    private fun onRequestedToStopService() {
-        defaultCoroutineScope.launch {
-            bikingActivityRepository.finishBiking()
-        }
-    }
-
-    private fun onDestroyService() {
-        collectIsBikingJob?.cancel()
-        collectIsBikingJob = null
+    private suspend fun finishBiking() {
+        bikingActivityRepository.finishBiking()
+        activitySensor.stop()
     }
 }
