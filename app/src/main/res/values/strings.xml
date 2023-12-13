@@ -11,4 +11,6 @@
     <string name="home_panel_notification_text">Have a nice Biking!</string>
     <string name="home_panel_notification_stop_text">Stop App</string>
     <string name="home_panel_location_provider_disabled">Please Turn On GPS!</string>
+    <string name="home_panel_location_grand_background_location_permissions">計測を始めるためには、位置情報の利用許諾を「常に」にしてください</string>
+    <string name="home_panel_location_grand_all_permissions">計測を始めるためには、全ての権限の利用許諾が必要です</string>
 </resources>

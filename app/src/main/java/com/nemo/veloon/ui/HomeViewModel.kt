@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.nemo.veloon.data.repository.BikingActivityRepository
 import com.nemo.veloon.ui.home.ActivityMeasurementState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -26,6 +28,12 @@ class HomeViewModel @Inject constructor(
                 speed = activityState.activity.speed.value,
                 distance =  activityState.activity.distance.value,
             )
+        }
+    }.catch {throwable ->
+        if (throwable is CancellationException) {
+            // no-op
+        } else {
+            // TODO 適切にUIに反映する
         }
     }.stateIn(
         scope = viewModelScope,

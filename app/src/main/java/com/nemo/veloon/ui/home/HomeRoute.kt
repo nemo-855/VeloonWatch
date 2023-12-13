@@ -54,7 +54,8 @@ fun HomeRoute(
     stopForegroundService: () -> Unit,
     checkLocationPermission: () -> Boolean,
     checkBodySensorsPermission: () -> Boolean,
-    checkCurrentActivityRecognitionPermission: () -> Boolean,
+    checkActivityRecognitionPermission: () -> Boolean,
+    checkBackgroundLocationPermission: () -> Boolean,
     isLocationProviderEnabled: () -> Boolean,
 ) {
     val context = LocalContext.current
@@ -63,9 +64,30 @@ fun HomeRoute(
     val locationPermissionRequest =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             when {
-                permissions.getOrDefault(ACCESS_FINE_LOCATION, false) -> startForegroundService()
-                permissions.getOrDefault(ACCESS_COARSE_LOCATION, false) -> startForegroundService()
-                else -> { /* no-op */ }
+                !isLocationProviderEnabled() -> {
+                    Toast.makeText(
+                        context,
+                        R.string.home_panel_location_provider_disabled,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                !checkBackgroundLocationPermission() -> {
+                    Toast.makeText(
+                        context,
+                        R.string.home_panel_location_grand_background_location_permissions,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                !checkAllNecessaryPermissionsAreGranted(permissions) -> {
+                    Toast.makeText(
+                        context,
+                        R.string.home_panel_location_grand_all_permissions,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> {
+                    startForegroundService()
+                }
             }
         }
 
@@ -76,9 +98,7 @@ fun HomeRoute(
             state = state,
             onStartButtonClicked = {
                 // TODO ACCESS_FINE_LOCATIONでないと正しく取れないよということを伝える
-                if (isLocationProviderEnabled().not()) {
-                    Toast.makeText(context, R.string.home_panel_location_provider_disabled, Toast.LENGTH_SHORT).show()
-                } else if (checkLocationPermission() && checkBodySensorsPermission() && checkCurrentActivityRecognitionPermission()) {
+                if (checkLocationPermission() && checkBodySensorsPermission() && checkActivityRecognitionPermission()) {
                     startForegroundService()
                 } else {
                     locationPermissionRequest.launch(getNecessaryPermissions())
@@ -223,6 +243,18 @@ private fun getNecessaryPermissions(): Array<String> {
     val activityRecognitionPermissions = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
 
     return locationPermissions + bodySensorsPermissions + activityRecognitionPermissions
+}
+
+private fun checkAllNecessaryPermissionsAreGranted(permissions:  Map<String, @JvmSuppressWildcards Boolean>): Boolean {
+    val isLocationGranted = permissions.getOrDefault(ACCESS_FINE_LOCATION, false)
+    val isBodySensorsGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissions.getOrDefault(BODY_SENSORS_BACKGROUND, false)
+    } else {
+        permissions.getOrDefault(BODY_SENSORS, false)
+    }
+    val isActivityRecognitionGranted = permissions.getOrDefault(Manifest.permission.ACTIVITY_RECOGNITION, false)
+
+    return isLocationGranted && isBodySensorsGranted && isActivityRecognitionGranted
 }
 
 @Composable
