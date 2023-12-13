@@ -103,6 +103,9 @@ class BikingActivityService : Service() {
             runCatching {
                 bikingActivityRepository.startBiking()
                 activitySensor.start()
+                activitySensor.current.collect {
+                    bikingActivityRepository.setActivityState(it)
+                }
             }.onSuccess {
                 // no-op
             }.onFailure {

@@ -23,4 +23,8 @@ class BikingActivityRepository @Inject constructor(
         bikingActivityDataStore.setIsBiking(false)
         bikingActivityDataStore.deleteActivityState()
     }
+
+    suspend fun setActivityState(activityState: ActivityState) {
+        bikingActivityDataStore.setActivityState(activityState)
+    }
 }
