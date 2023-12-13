@@ -28,6 +28,12 @@ class PermissionChecker @Inject constructor(@ApplicationContext private val cont
         else null
     }
 
+    fun checkCurrentBackgroundLocationPermission(): String? {
+        return if (checkCurrentPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        } else null
+    }
+
     private fun checkCurrentPermission(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             context,
