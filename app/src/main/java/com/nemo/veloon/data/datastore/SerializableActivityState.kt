@@ -15,6 +15,7 @@ data class SerializableActivityState(
                 averageSpeed = activityState.activity.averageSpeed.value,
                 maxSpeed = activityState.activity.maxSpeed.value,
                 distance = activityState.activity.distance.value,
+                calories = activityState.activity.calories.value,
             ),
             measurementStatus = activityState.measurementStatus,
         )
@@ -26,6 +27,7 @@ data class SerializableActivityState(
                         averageSpeed = Activity.Speed(it.activity.averageSpeed),
                         maxSpeed = Activity.Speed(it.activity.averageSpeed),
                         distance = Activity.Distance(it.activity.distance),
+                        calories = Activity.Calories(it.activity.calories),
                     ),
                     measurementStatus = measurementStatus,
                 )
@@ -38,5 +40,6 @@ data class SerializableActivityState(
         val averageSpeed: Double,
         val maxSpeed: Double,
         val distance: Double,
+        val calories: Double,
     )
 }

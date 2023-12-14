@@ -137,8 +137,9 @@ private fun HomePanel(
                 onClick = onFinishButtonClicked,
                 textContent = {
                     inProgressText(
-                        speed = state.maxSpeed.toString(),
+                        calories = state.calories.toString(),
                         distance = state.distance.toString(),
+                        maxSpeed = state.maxSpeed.toString(),
                     )
                 }
             )
@@ -158,8 +159,9 @@ private fun ScalingLazyListScope.inPreparationText() {
 }
 
 private fun ScalingLazyListScope.inProgressText(
-    speed: String,
+    calories: String,
     distance: String,
+    maxSpeed: String,
 ) {
     item {
         Column(
@@ -167,7 +169,7 @@ private fun ScalingLazyListScope.inProgressText(
             horizontalAlignment = Alignment.Start,
         ) {
             Text(
-                text = stringResource(id = R.string.home_panel_speed),
+                text = stringResource(id = R.string.home_panel_calories),
                 color = MaterialTheme.colors.primary,
                 style = MaterialTheme.typography.body1,
             )
@@ -177,14 +179,14 @@ private fun ScalingLazyListScope.inProgressText(
             ) {
                 HugeText(
                     modifier = Modifier.weight(1f),
-                    text = speed,
+                    text = calories,
                     textAlign = TextAlign.Start,
                     color = MaterialTheme.colors.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = stringResource(id = R.string.home_panel_speed_unit),
+                    text = stringResource(id = R.string.home_panel_calories_unit),
                     color = MaterialTheme.colors.primary,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.body1,
@@ -194,7 +196,7 @@ private fun ScalingLazyListScope.inProgressText(
     }
 
     item {
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(4.dp))
     }
 
     item {
@@ -221,6 +223,42 @@ private fun ScalingLazyListScope.inProgressText(
                 )
                 Text(
                     text = stringResource(id = R.string.home_panel_distance_unit),
+                    color = MaterialTheme.colors.primary,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+        }
+    }
+
+    item {
+        Spacer(modifier = Modifier.size(4.dp))
+    }
+
+    item {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+        ) {
+            Text(
+                text = stringResource(id = R.string.home_panel_speed),
+                color = MaterialTheme.colors.primary,
+                style = MaterialTheme.typography.body1,
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                HugeText(
+                    modifier = Modifier.weight(1f),
+                    text = maxSpeed,
+                    textAlign = TextAlign.Start,
+                    color = MaterialTheme.colors.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = stringResource(id = R.string.home_panel_speed_unit),
                     color = MaterialTheme.colors.primary,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.body1,
@@ -300,12 +338,14 @@ private class PreviewProvider : PreviewParameterProvider<ActivityMeasurementStat
         get() = sequenceOf(
             ActivityMeasurementState.InPreparation,
             ActivityMeasurementState.InProgress(
-                maxSpeed = 0.0,
+                calories = 0.0,
                 distance = 0.0,
+                maxSpeed = 0.0,
             ),
             ActivityMeasurementState.InProgress(
-                maxSpeed = 50.0,
+                calories = 4000.0,
                 distance = 1000.0,
+                maxSpeed = 40.0,
             ),
         )
 }

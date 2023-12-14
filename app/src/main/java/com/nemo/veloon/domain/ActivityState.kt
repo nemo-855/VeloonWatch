@@ -21,12 +21,14 @@ data class ActivityState(
         averageSpeed: Activity.Speed? = null,
         maxSpeed: Activity.Speed? = null,
         distance: Activity.Distance? = null,
+        calories: Activity.Calories? = null,
     ): ActivityState {
         return copy(
             activity = activity.copy(
                 averageSpeed = averageSpeed ?: activity.averageSpeed,
                 maxSpeed = maxSpeed ?: activity.maxSpeed,
                 distance = distance ?: activity.distance,
+                calories = calories ?: activity.calories,
             )
         )
     }

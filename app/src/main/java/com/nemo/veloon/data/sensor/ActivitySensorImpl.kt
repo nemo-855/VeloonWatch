@@ -29,6 +29,8 @@ class ActivitySensorImpl(context: Context) :
 
     private val necessaryDataTypes = setOf(
         DataType.SPEED_STATS,
+        DataType.CALORIES_TOTAL,
+        DataType.PACE_STATS,
         DataType.DISTANCE_TOTAL,
     )
 
@@ -85,14 +87,19 @@ class ActivitySensorImpl(context: Context) :
                     // ExerciseUpdate doc ↓
                     // https://developer.android.com/reference/androidx/health/services/client/data/ExerciseUpdate
                     val latestMetrics = update.latestMetrics
-                    latestMetrics.getData(DataType.SPEED_STATS)?.let { stats ->
+                    latestMetrics.getData(DataType.PACE_STATS)?.let { stats ->
+                        val msPerKmToKmPerH: (Double) -> Double = { 1 * 3600 * 1000 / it }
                         _current.update { it.copyActivity(
-                            averageSpeed  = Activity.Speed(stats.average),
-                            maxSpeed = Activity.Speed(stats.max),
+                            averageSpeed  = Activity.Speed(msPerKmToKmPerH(stats.average)),
+                            maxSpeed = Activity.Speed((msPerKmToKmPerH(stats.max))),
                         ) }
                     }
                     latestMetrics.getData(DataType.DISTANCE_TOTAL)?.total?.let { distance ->
-                        _current.update { it.copyActivity(distance = Activity.Distance(distance)) }
+                        val mToKm: (Double) -> Double = { it / 1000 }
+                        _current.update { it.copyActivity(distance = Activity.Distance(mToKm(distance))) }
+                    }
+                    latestMetrics.getData(DataType.CALORIES_TOTAL)?.total?.let { calories ->
+                        _current.update { it.copyActivity(calories = Activity.Calories(calories)) }
                     }
                 }
             }

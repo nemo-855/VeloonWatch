@@ -6,11 +6,13 @@ sealed class ActivityMeasurementState {
     /**
      * 計測中
      *
-     * @param maxSpeed 最高の走行速度(km/h)
+     * @param calories 消費カロリー(kcal)
      * @param distance 走行距離(m)
+     * @param maxSpeed 走行最高速度(km/h)
      */
     class InProgress(
-        val maxSpeed: Double,
+        val calories: Double,
         val distance: Double,
+        val maxSpeed: Double,
     ) : ActivityMeasurementState()
 }

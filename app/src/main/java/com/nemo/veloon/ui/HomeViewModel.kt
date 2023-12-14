@@ -25,8 +25,9 @@ class HomeViewModel @Inject constructor(
             ActivityMeasurementState.InPreparation
         } else {
             ActivityMeasurementState.InProgress(
-                maxSpeed = "%.1f".format((activityState.activity.maxSpeed.value) * 3600 / 1000).toDouble(),
-                distance =  "%.1f".format(activityState.activity.distance.value / 1000).toDouble(),
+                calories = "%.1f".format((activityState.activity.calories.value)).toDouble(),
+                distance =  "%.1f".format(activityState.activity.distance.value).toDouble(),
+                maxSpeed = "%.1f".format(activityState.activity.maxSpeed.value).toDouble(),
             )
         }
     }.catch {throwable ->
