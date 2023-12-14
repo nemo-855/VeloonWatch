@@ -27,7 +27,7 @@ fun HugeText(
         modifier = modifier,
         color = color,
         textAlign = textAlign,
-        fontSize = 24.sp,
+        fontSize = 20.sp,
         overflow = overflow,
         maxLines = maxLines,
         minLines = minLines,
