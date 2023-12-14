@@ -137,7 +137,7 @@ private fun HomePanel(
                 onClick = onFinishButtonClicked,
                 textContent = {
                     inProgressText(
-                        speed = state.speed.toString(),
+                        speed = state.maxSpeed.toString(),
                         distance = state.distance.toString(),
                     )
                 }
@@ -148,10 +148,11 @@ private fun HomePanel(
 
 private fun ScalingLazyListScope.inPreparationText() {
     item {
-        Text(
+        HugeText(
             text = stringResource(id = R.string.home_panel_click_start),
             color = MaterialTheme.colors.primary,
-            style = MaterialTheme.typography.body1,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
         )
     }
 }
@@ -299,11 +300,11 @@ private class PreviewProvider : PreviewParameterProvider<ActivityMeasurementStat
         get() = sequenceOf(
             ActivityMeasurementState.InPreparation,
             ActivityMeasurementState.InProgress(
-                speed = 0.0,
+                maxSpeed = 0.0,
                 distance = 0.0,
             ),
             ActivityMeasurementState.InProgress(
-                speed = 50.0,
+                maxSpeed = 50.0,
                 distance = 1000.0,
             ),
         )

@@ -12,7 +12,8 @@ data class SerializableActivityState(
     companion object {
         fun from(activityState: ActivityState) = SerializableActivityState(
             activity = SerializableActivity(
-                speed = activityState.activity.speed.value,
+                averageSpeed = activityState.activity.averageSpeed.value,
+                maxSpeed = activityState.activity.maxSpeed.value,
                 distance = activityState.activity.distance.value,
             ),
             measurementStatus = activityState.measurementStatus,
@@ -22,7 +23,8 @@ data class SerializableActivityState(
             return this?.let {
                 ActivityState(
                     activity = Activity(
-                        speed = Activity.Speed(it.activity.speed),
+                        averageSpeed = Activity.Speed(it.activity.averageSpeed),
+                        maxSpeed = Activity.Speed(it.activity.averageSpeed),
                         distance = Activity.Distance(it.activity.distance),
                     ),
                     measurementStatus = measurementStatus,
@@ -33,7 +35,8 @@ data class SerializableActivityState(
 
     @Serializable
     data class SerializableActivity(
-        val speed: Double,
+        val averageSpeed: Double,
+        val maxSpeed: Double,
         val distance: Double,
     )
 }

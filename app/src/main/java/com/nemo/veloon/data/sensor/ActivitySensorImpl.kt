@@ -28,8 +28,8 @@ class ActivitySensorImpl(context: Context) :
     override val current = _current
 
     private val necessaryDataTypes = setOf(
-        DataType.SPEED,
-        DataType.DISTANCE,
+        DataType.SPEED_STATS,
+        DataType.DISTANCE_TOTAL,
     )
 
     override suspend fun start() {
@@ -85,11 +85,14 @@ class ActivitySensorImpl(context: Context) :
                     // ExerciseUpdate doc ↓
                     // https://developer.android.com/reference/androidx/health/services/client/data/ExerciseUpdate
                     val latestMetrics = update.latestMetrics
-                    latestMetrics.getData(DataType.SPEED).forEach { speed ->
-                        _current.update { it.copyActivity(speed = Activity.Speed(speed.value)) }
+                    latestMetrics.getData(DataType.SPEED_STATS)?.let { stats ->
+                        _current.update { it.copyActivity(
+                            averageSpeed  = Activity.Speed(stats.average),
+                            maxSpeed = Activity.Speed(stats.max),
+                        ) }
                     }
-                    latestMetrics.getData(DataType.DISTANCE).forEach { distance ->
-                        _current.update { it.copyActivity(distance = Activity.Distance(distance.value)) }
+                    latestMetrics.getData(DataType.DISTANCE_TOTAL)?.total?.let { distance ->
+                        _current.update { it.copyActivity(distance = Activity.Distance(distance)) }
                     }
                 }
             }

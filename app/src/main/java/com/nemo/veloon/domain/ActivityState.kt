@@ -18,12 +18,14 @@ data class ActivityState(
     }
 
     fun copyActivity(
-        speed: Activity.Speed? = null,
+        averageSpeed: Activity.Speed? = null,
+        maxSpeed: Activity.Speed? = null,
         distance: Activity.Distance? = null,
     ): ActivityState {
         return copy(
             activity = activity.copy(
-                speed = speed ?: activity.speed,
+                averageSpeed = averageSpeed ?: activity.averageSpeed,
+                maxSpeed = maxSpeed ?: activity.maxSpeed,
                 distance = distance ?: activity.distance,
             )
         )
