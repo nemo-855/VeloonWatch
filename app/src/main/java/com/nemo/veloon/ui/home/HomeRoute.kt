@@ -20,11 +20,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -303,15 +304,14 @@ private fun Content(
     onClick: () -> Unit,
     textContent: ScalingLazyListScope.() -> Unit,
 ) {
-    Column(
+    Box(
         modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        contentAlignment = Alignment.BottomCenter,
     ) {
         ScalingLazyColumn(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .padding(
-                    top = 24.dp,
                     start = 24.dp,
                     end = 24.dp,
                 ),
@@ -322,6 +322,8 @@ private fun Content(
         }
         Icon(
             modifier = Modifier
+                .clip(CircleShape)
+                .background(MaterialTheme.colors.background)
                 .padding(4.dp)
                 .clickable(onClick = onClick)
                 .padding(4.dp)
@@ -351,7 +353,7 @@ private class PreviewProvider : PreviewParameterProvider<ActivityMeasurementStat
 }
 
 @Preview(
-    device = Devices.WEAR_OS_LARGE_ROUND,
+    device = Devices.WEAR_OS_SMALL_ROUND,
     showBackground = true,
 )
 @Composable
@@ -359,11 +361,7 @@ private fun HomePanelPreview(
     @PreviewParameter(PreviewProvider::class) homeState: ActivityMeasurementState,
 ) {
     VeloonTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-        ) {
+        Scaffold {
             HomePanel(
                 state = homeState,
                 onStartButtonClicked = {},
