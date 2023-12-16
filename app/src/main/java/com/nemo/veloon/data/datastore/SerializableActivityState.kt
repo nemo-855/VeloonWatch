@@ -2,6 +2,7 @@ package com.nemo.veloon.data.datastore
 
 import com.nemo.veloon.domain.Activity
 import com.nemo.veloon.domain.ActivityState
+import com.nemo.veloon.util.SafeDouble.Companion.toSafe
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,10 +13,10 @@ data class SerializableActivityState(
     companion object {
         fun from(activityState: ActivityState) = SerializableActivityState(
             activity = SerializableActivity(
-                averageSpeed = activityState.activity.averageSpeed.value,
-                maxSpeed = activityState.activity.maxSpeed.value,
-                distance = activityState.activity.distance.value,
-                calories = activityState.activity.calories.value,
+                averageSpeed = activityState.activity.averageSpeed.value.getValue(),
+                maxSpeed = activityState.activity.maxSpeed.value.getValue(),
+                distance = activityState.activity.distance.value.getValue(),
+                calories = activityState.activity.calories.value.getValue(),
             ),
             measurementStatus = activityState.measurementStatus,
         )
@@ -24,10 +25,10 @@ data class SerializableActivityState(
             return this?.let {
                 ActivityState(
                     activity = Activity(
-                        averageSpeed = Activity.Speed(it.activity.averageSpeed),
-                        maxSpeed = Activity.Speed(it.activity.averageSpeed),
-                        distance = Activity.Distance(it.activity.distance),
-                        calories = Activity.Calories(it.activity.calories),
+                        averageSpeed = Activity.Speed(it.activity.averageSpeed.toSafe()),
+                        maxSpeed = Activity.Speed(it.activity.averageSpeed.toSafe()),
+                        distance = Activity.Distance(it.activity.distance.toSafe()),
+                        calories = Activity.Calories(it.activity.calories.toSafe()),
                     ),
                     measurementStatus = measurementStatus,
                 )

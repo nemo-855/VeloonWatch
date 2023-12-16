@@ -1,5 +1,7 @@
 package com.nemo.veloon.domain
 
+import com.nemo.veloon.util.SafeDouble
+
 /**
  * 走行情報
  *
@@ -16,10 +18,10 @@ data class Activity(
 ) {
     companion object {
         val EMPTY = Activity(
-            averageSpeed = Speed(0.0),
-            maxSpeed = Speed(0.0),
-            distance = Distance(0.0),
-            calories = Calories(0.0),
+            averageSpeed = Speed(SafeDouble.ZERO),
+            maxSpeed = Speed(SafeDouble.ZERO),
+            distance = Distance(SafeDouble.ZERO),
+            calories = Calories(SafeDouble.ZERO),
         )
     }
 
@@ -27,17 +29,17 @@ data class Activity(
      * 走行速度(km/h)
      */
     @JvmInline
-    value class Speed(val value: Double)
+    value class Speed(val value: SafeDouble)
 
     /**
      * 走行距離(km)
      */
     @JvmInline
-    value class Distance(val value: Double)
+    value class Distance(val value: SafeDouble)
 
     /**
      * 消費カロリー(kcal)
      */
     @JvmInline
-    value class Calories(val value: Double)
+    value class Calories(val value: SafeDouble)
 }

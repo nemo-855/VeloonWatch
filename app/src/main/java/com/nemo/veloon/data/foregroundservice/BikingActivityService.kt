@@ -99,7 +99,7 @@ class BikingActivityService : Service() {
     }
 
     private fun onStartService() {
-        foregroundServiceScope.launch {
+        foregroundServiceScope.launch(Dispatchers.IO) {
             runCatching {
                 bikingActivityRepository.startBiking()
                 activitySensor.start()

@@ -346,7 +346,7 @@ private class PreviewProvider : PreviewParameterProvider<ActivityMeasurementStat
             ),
             ActivityMeasurementState.InProgress(
                 calories = 4000.0,
-                distance = 1000.0,
+                distance = 200.0,
                 maxSpeed = 40.0,
             ),
         )
@@ -361,7 +361,7 @@ private fun HomePanelPreview(
     @PreviewParameter(PreviewProvider::class) homeState: ActivityMeasurementState,
 ) {
     VeloonTheme {
-        Scaffold {
+        Scaffold(modifier = Modifier.background(MaterialTheme.colors.background)) {
             HomePanel(
                 state = homeState,
                 onStartButtonClicked = {},

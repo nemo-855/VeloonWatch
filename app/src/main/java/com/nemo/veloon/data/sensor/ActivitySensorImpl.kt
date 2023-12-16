@@ -17,6 +17,7 @@ import androidx.health.services.client.endExercise
 import com.nemo.veloon.domain.Activity
 import com.nemo.veloon.domain.ActivityState
 import com.nemo.veloon.domain.InAppException
+import com.nemo.veloon.util.SafeDouble.Companion.toSafe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -90,16 +91,16 @@ class ActivitySensorImpl(context: Context) :
                     latestMetrics.getData(DataType.PACE_STATS)?.let { stats ->
                         val msPerKmToKmPerH: (Double) -> Double = { 1 * 3600 * 1000 / it }
                         _current.update { it.copyActivity(
-                            averageSpeed  = Activity.Speed(msPerKmToKmPerH(stats.average)),
-                            maxSpeed = Activity.Speed((msPerKmToKmPerH(stats.max))),
+                            averageSpeed  = Activity.Speed(msPerKmToKmPerH(stats.average).toSafe()),
+                            maxSpeed = Activity.Speed((msPerKmToKmPerH(stats.max)).toSafe()),
                         ) }
                     }
                     latestMetrics.getData(DataType.DISTANCE_TOTAL)?.total?.let { distance ->
                         val mToKm: (Double) -> Double = { it / 1000 }
-                        _current.update { it.copyActivity(distance = Activity.Distance(mToKm(distance))) }
+                        _current.update { it.copyActivity(distance = Activity.Distance(mToKm(distance).toSafe())) }
                     }
                     latestMetrics.getData(DataType.CALORIES_TOTAL)?.total?.let { calories ->
-                        _current.update { it.copyActivity(calories = Activity.Calories(calories)) }
+                        _current.update { it.copyActivity(calories = Activity.Calories(calories.toSafe())) }
                     }
                 }
             }
